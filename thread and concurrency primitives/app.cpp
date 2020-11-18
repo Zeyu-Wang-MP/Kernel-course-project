@@ -1,36 +1,62 @@
+/*
+ * Checking behavior of deadlock with mutex
+ */
+
 #include <iostream>
-#include <string>
+#include <cstdlib>
 #include "thread.h"
 
-void C(void *a) {
-    std::string s = thread::swap3("message #1 from C");
-    std::cout << "C received: " << s << std::endl;
+using std::cout;
+using std::endl;
 
-    s = thread::swap3("message #2 from C");
-    std::cout << "C received: " << s << std::endl;
+mutex mutex1;
+mutex mutex2;
+
+void threadb(void *a)
+{
+    char *id = (char *) a;
+
+    mutex2.lock();
+    cout << id << " got lock 2. Attempt to get lock 1" << endl;
+    
+    mutex1.lock();
+    cout << id << " got lock 1. Should not have happened..." << endl;
+    
+    mutex2.unlock();
+    mutex1.unlock();
 }
 
-void B(void *a) {
-    std::string s = thread::swap3("message #1 from B");
-    std::cout << "B received: " << s << std::endl;
+void threada(void *a)
+{
+    char *id = (char *) a;
 
-    s = thread::swap3("message #2 from B");
-    std::cout << "B received: " << s << std::endl;
-}
-
-void A(void *a) {
-    thread B_thread (B, nullptr);
-    thread C_thread (C, nullptr);
-
-    std::string s = thread::swap3("message #1 from A");
-    std::cout << "A received: " << s << std::endl;
-
+    mutex1.lock();
+    cout << id << " got lock 1. yielding to b. " << endl;
     thread::yield();
 
-    s = thread::swap3("message #2 from A");
-    std::cout << "A received: " << s << std::endl;
+    mutex2.lock();
+    cout << id << " got lock 2. Should not have happened... " << endl;
+    
+    
+    mutex1.unlock();
+    mutex2.unlock();
 }
 
-int main() {
-    cpu::boot(1, A, nullptr, false, false, 0);
+void parent(void *a)
+{
+    intptr_t arg = (intptr_t) a;
+
+    mutex1.lock();
+    cout << "parent called with arg " << arg << endl;
+    mutex1.unlock();
+
+    thread t1 ( (thread_startfunc_t) threada, (void *) "thread a");
+    thread t2 ( (thread_startfunc_t) threadb, (void *) "thread b");
+    
+    cout << "parent finished " << endl;
+}
+
+int main()
+{
+    cpu::boot(1, (thread_startfunc_t) parent, (void *) 100, false, false, 0);
 }

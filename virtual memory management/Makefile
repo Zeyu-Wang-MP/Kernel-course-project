@@ -10,7 +10,6 @@ all: pager app
 
 # Compile the pager and tag this compilation
 pager: ${PAGER_OBJS} libvm_pager.o
-	./autotag.sh
 	${CC} -o $@ $^
 
 # Compile an application program

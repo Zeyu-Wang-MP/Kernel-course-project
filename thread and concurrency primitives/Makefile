@@ -10,7 +10,6 @@ all: libthread.o app
 
 # Compile the thread library and tag this compilation
 libthread.o: ${THREAD_OBJS}
-	./autotag.sh
 	ld -r -o $@ ${THREAD_OBJS}
 
 # Compile an application program
