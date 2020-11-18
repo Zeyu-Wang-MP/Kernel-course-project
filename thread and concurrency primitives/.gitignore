@@ -1,0 +1,5 @@
+.vscode
+core
+*.o
+.DS_Store
+app
