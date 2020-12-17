@@ -98,14 +98,6 @@ private:
     // header appended to beginning. Throws if sending failed. Takes in 'request' to get client
     // password for encryption
     void send_helper(int client_fd, const std::string& message, const Request& request);
-    
-    // Kevin's version of 'search_file_system'
-    // return inode block of an existing pathname, passing in user making request
-    // Checks correct permissions for every parent of pathname, (But not of the last object in path!)
-    // i.e. pathname = /parent/child0/child1, checks that 'parent' and 'child0' haver owner = user
-    // but doesn't check child1 has owner = user. 
-    // Does NOT read inode of child1, only returns block of child1s inode.
-    unsigned get_inodeblock(const std::string &pathname, const std::string &user);
 
     // parse pathname into vector of object components
     static std::vector<std::string> parse_path(const std::string &pathname);
