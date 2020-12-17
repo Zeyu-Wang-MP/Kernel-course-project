@@ -1,0 +1,5 @@
+.DS_Store
+.vscode
+File_server.o
+app
+main.o
