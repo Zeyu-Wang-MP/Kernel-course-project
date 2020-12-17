@@ -10,7 +10,6 @@ all: fs app
 
 # Compile the file server and tag this compilation
 fs: ${FS_OBJS} libfs_server.o
-	./autotag.sh
 	${CC} -o $@ $^ -pthread -ldl
 
 # Compile a client program
